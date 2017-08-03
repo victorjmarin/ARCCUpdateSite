@@ -44,14 +44,14 @@ Let us consider the following snippet:
 	int counter = 0;
 	//... more code
 
-    for (int i = 0; i <= m; i++) {        
+	for (int i = 0; i <= m; i++) {        
         
-        if (m < getValue(i, true)){
-        	counter++;
-        	//... more more code
-        }
+		if (m < getValue(i, true)){
+			counter++;
+			//... more more code
+		}
         
-    }
+	}
 ```
 
 In this piece of code we are incrementing the value of an integer variable inside a loop, provided a certain condition is met. We can create a pattern from this if we are interested in generating strategies that include this pattern. Each one of the statements will be a vertex in our pattern:
