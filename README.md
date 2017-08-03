@@ -68,7 +68,7 @@ Notice we do not care about the variable types in assignments or declarations. A
 Now we can draw depencency edges between vertices. Recall that edges can be of type *Data*, to represent a data dependency between statements, or type *Ctrl* to represent control dependencies. Here, *Data* and *Ctrl* edges are represented with solid and dashed lines respectively:
 
 
-![Alt text](/figures/CondCumulativelyAddDraft.PNG?raw=true "Pattern")
+![Alt text](/figures/CondCumulativelyAddDraft.PNG?raw=true =100x "Pattern")
 
 
 This is a complete valid pattern, however, we may want to loosen it up so that it can match with more variations of the given code snippet, hence making the pattern more reusable. Assume that instead of considering only increments by 1 in statement (6), we want the pattern to match statements with any increment. Thus, we can change the regular expression in vertex (6) to `c+` so that it matches with `c++` or `c+=`.
