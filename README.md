@@ -58,25 +58,24 @@ In this piece of code we are incrementing the value of an integer variable insid
 
 1. `counter = 0`  -> *Assign*
 2. `i = 0`        -> *Assign*
-3. `i <= m`       -> *Ctrl*
+3. `i <= m`       -> *Cond*
 4. `i++`          -> *Assign*
-5. `m < getValue(i, true)` -> *Ctrl*
+5. `m < getValue(i, true)` -> *Cond*
 6. `counter++`     -> *Assign*
 
-Notice we do not care about the variable types in assignments or declarations. Also, notice that in those statements that can have two vertex types, only the main type is considered. For instance, statement 5 contains a comparison (*Ctrl*) and a function call (*Call*) and we pick *Ctrl*.
+Notice we do not care about the variable types in assignments or declarations. Also, notice that in those statements that can have two vertex types, only the main type is considered. For instance, statement 5 contains a comparison (*Cond*) and a function call (*Call*) and we pick *Cond*.
 
 Now we can draw depencency edges between vertices. Recall that edges can be of type *Data*, to represent a data dependency between statements, or type *Ctrl* to represent control dependencies. Here, *Data* and *Ctrl* edges are represented with solid and dashed lines respectively:
 
 
-
+![Alt text](/figures/DraftPattern.PNG?raw=true "Pattern")
 
 
 This is a complete valid pattern, however, we may want to loosen it up so that it can match with more variations of the given code snippet, hence making the pattern more reusable. Assume that instead of considering only increments by 1 in statement (6), we want the pattern to match statements with any increment. Thus, we can change the regular expression in vertex (6) to `counter+` so that it matches with `counter++` or `counter+=`.
 
 We may also remove vertices and/or edges from a pattern to make it more flexible, or remove the expression inside the vertex if we only care about the vertex type. In this example, we will remove the expression in vertex (3) and will get rid of vertices (2) and (4) so that the pattern can match with any type of loop (`for/while`) with any kind of loop condition, as long as the code is indeed iteratively incrementing a variable under a certain if condition:
 
-
-
+![Alt text](/figures/CondCumulativelyAdd.PNG?raw=true "Pattern: Conditional cumulatively adding")
 
 Another common way to make a pattern more flexible and reusable is to remove the type from an *Assign* vertex (making it *Untyped*). That way the vertex will be able to match with either an assinment statement or a declaration. This is a useful strategy if we know that the variable being assigned in the reference code snippet may actually be a method parameter in another version of the code. Method parameters are basically declaration statements (type *Decl*) in our graph structure. We don't need to use this tactic in this example.
 
@@ -88,22 +87,22 @@ Now that we have designed our pattern, we write it in XML form. This is pretty s
     <description>Conditional cumulatively adding</description>
     <edges>
         <from>1</from>
-        <to>2</to>
+        <to>6</to>
         <type>DATA</type>
     </edges>
     <edges>
+        <from>5</from>
+        <to>6</to>
+        <type>CTRL</type>
+    </edges>
+    <edges>
         <from>3</from>
-        <to>2</to>
+        <to>5</to>
         <type>CTRL</type>
     </edges>
     <edges>
-        <from>4</from>
+        <from>3</from>
         <to>3</to>
-        <type>CTRL</type>
-    </edges>
-    <edges>
-        <from>4</from>
-        <to>4</to>
         <type>CTRL</type>
     </edges>
     <missingFeedback>consider using a loop and a condition, recall to add and assign the same variable</missingFeedback>
@@ -116,18 +115,22 @@ Now that we have designed our pattern, we write it in XML form. This is pretty s
         <offset>0</offset>
         <type>ASSIGN</type>
         <approxLabel>:c=\d+</approxLabel>
-        <correctFeedback>:c is initialized to 0</correctFeedback>
-        <incorrectFeedback>:c should be initialized to 0</incorrectFeedback>
     </vertices>
     <vertices>
         <assignedVariable>:c</assignedVariable>
-        <id>2</id>
-        <label>:c\+=</label>
+        <id>6</id>
+        <label>:c\+</label>
         <length>0</length>
         <offset>0</offset>
         <readingVariables>:c</readingVariables>
         <type>ASSIGN</type>
-        <correctFeedback>:c is cumulatively added</correctFeedback>
+    </vertices>
+    <vertices>
+        <id>5</id>
+        <label></label>
+        <length>0</length>
+        <offset>0</offset>
+        <type>CTRL</type>
     </vertices>
     <vertices>
         <id>3</id>
@@ -135,15 +138,6 @@ Now that we have designed our pattern, we write it in XML form. This is pretty s
         <length>0</length>
         <offset>0</offset>
         <type>CTRL</type>
-        <correctFeedback>:c is in a condition</correctFeedback>
-    </vertices>
-    <vertices>
-        <id>4</id>
-        <label></label>
-        <length>0</length>
-        <offset>0</offset>
-        <type>CTRL</type>
-        <correctFeedback>:c is in a loop</correctFeedback>
     </vertices>
 </xmlPatternGraph>
 ```
