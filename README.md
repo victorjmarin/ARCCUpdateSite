@@ -34,7 +34,7 @@ For a showcase of ARCC, please watch our videos [here](https://www.youtube.com/w
 
 Creating new patterns in ARCC requires some expertise with using the tool, in addition to some *basic* knowledge on how the program dependence graphs are generated to search for patterns and strategies. To see how the program dependence graph is created, check Section 3 (Under-the-hood technique) in our [FSE paper](http://dl.acm.org/citation.cfm?doid=3106237.3122824).
 
-A pattern is a graph. More specifically, a pattern is a set of vertices and edges representing a small set of statements (or approximate statements) and with dependencies between them. A pattern does not represent a whole program or procedure like the program dependence graph does.
+A pattern is a graph. More specifically, a pattern is a set of vertices and edges representing a small set of statements (or approximate statements) with dependencies between them. A pattern does not represent a whole program or procedure like the program dependence graph does.
 
 To create a new pattern, we first manually design a graph from a small set of target statements and then save this graph using a particular XML notation.
 
@@ -54,7 +54,7 @@ for (int i = 0; i <= m; i++) {
 }
 ```
 
-In this piece of code we are incrementing the value of an integer variable inside a loop, provided a certain condition is met. We can create a pattern from this if we are interested in generating strategies that include this pattern. Each one of the statements will be a vertex in our pattern:
+In this piece of code we are incrementing the value of an integer variable (`counter`) inside a loop, provided a certain condition is met. We can create a pattern from this if we are interested in generating strategies that include this pattern. Each one of the statements will be a vertex in our pattern, and will have a specific vertex type:
 
 1. `counter = 0`  -> *Assign*
 2. `i = 0`        -> *Assign*
@@ -68,7 +68,7 @@ Notice we do not care about the variable types in assignments or declarations. A
 Now we can draw depencency edges between vertices. Recall that edges can be of type *Data*, to represent a data dependency between statements, or type *Ctrl* to represent control dependencies. Here, *Data* and *Ctrl* edges are represented with solid and dashed lines respectively:
 
 
-<img src="/figures/CondCumulativelyAddDraft.PNG" alt="Pattern" style="width:50px;height:30px;"/>
+<img src="/figures/CondCumulativelyAddDraft.PNG" alt="Pattern" style="width:50px;height:30px"/>
 
 
 This is a complete valid pattern, however, we may want to loosen it up so that it can match with more variations of the given code snippet, hence making the pattern more reusable. Assume that instead of considering only increments by 1 in statement (6), we want the pattern to match statements with any increment. Thus, we can change the regular expression in vertex (6) to `c+` so that it matches with `c++` or `c+=`.
@@ -77,9 +77,9 @@ We may also remove vertices and/or edges from a pattern to make it more flexible
 
 ![Alt text](/figures/CondCumulativelyAdd.PNG?raw=true "Pattern: Conditional cumulatively adding")
 
-Notice that vertex (1) now also has an approximate expression `c = [Any digit]`. We include this if we believe that a common error in this pattern, for that particular statement is a bad initialization to some other number other than 0.
+Notice that vertex (1) now also has an approximate expression in red, `c = [Any digit]`. We include this if we believe that a common error in this pattern, for that particular statement is a bad initialization to some other number other than 0.
 
-Another common way to make a pattern more flexible and reusable is to remove the type from an *Assign* vertex (making it *Untyped*). That way the vertex will be able to match with either an assinment statement or a declaration. This is a useful strategy if we know that the variable being assigned in the reference code snippet may actually be a method parameter in another version of the code. Method parameters are basically declaration statements (type *Decl*) in our graph structure. We don't need to use this tactic in this example.
+Another common way to make a pattern more flexible and reusable is to remove the type from an *Assign* vertex (making it *Untyped*). That way the vertex will be able to match with either an assinment statement or a declaration statement. This is a useful technique if we know that the variable being assigned in the reference code snippet may sometimes be a method parameter in other versions of the code. Method parameters are basically declaration statements (type *Decl*) in our graph structure. We don't need to use this tactic in this example.
 
 Now that we have designed our pattern, we write it in XML form. This is pretty straightforward:
 
@@ -144,4 +144,4 @@ Now that we have designed our pattern, we write it in XML form. This is pretty s
 </xmlPatternGraph>
 ```
 
-This XML file has to be added in a specific Eclipse directory, which path varies greatly from user to user. The easiest way to find this path is to open Windows Explorer and search for an existing pattern file: ITERATIVELY_POPULATE_LIST. When the search is done, right click on the first search result and select *Open file location*. This would take you to the right directory, where you can paste your newly created pattern XML file.
+This XML file has to be added in a specific Eclipse directory, which path varies greatly from user to user. The easiest way to find this path is to open Windows Explorer and search for an existing pattern file, like ITERATIVELY_POPULATE_LIST. When the search is done, right click on the first search result and select *Open file location*. This would take you to the right directory, where you can paste your newly created pattern XML file.
